@@ -7,6 +7,11 @@
 <meta property="og:title" content="The Backrooms Co-op">
 <meta property="og:description" content="Tre livelli generati a ogni partita. Qualcosa che vi cerca e vi sente. Si esce insieme o non si esce.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://xmarcos10.github.io/the-backrooms-coop/">
+<meta property="og:site_name" content="The Backrooms Co-op">
+<meta property="og:locale" content="it_IT">
+<link rel="canonical" href="https://xmarcos10.github.io/the-backrooms-coop/">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
   html { color-scheme: dark; }
   body { margin: 0; }
@@ -41,7 +46,10 @@
 
     --text: #efe9d5;
     --muted: #918963;
-    --faint: #6a6448;
+    /* Era #6a6448, che su questo fondo dà 3,29:1 — sotto il minimo AA di 4,5 per il testo
+       normale, e le due cose scritte con questo colore sono la riga di intestazione e le
+       didascalie, cioè testo piccolo. Ora 4,8:1, con lo stesso ruolo nella scala. */
+    --faint: #857e64;
 
     --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
     --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -51,6 +59,23 @@
   }
 
   * { box-sizing: border-box; }
+
+  /* Questa classe veniva usata nel markup ma non era mai stata scritta: a nascondere il
+     titolo della sezione download era l'attributo `hidden`, che però lo toglie anche
+     dall'albero di accessibilità — quindi la sezione non aveva nome per uno screen reader.
+     Ora il nome c'è e il titolo resta invisibile, che era l'intenzione dall'inizio. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
 
   body {
     background: var(--ground);
@@ -198,6 +223,78 @@
     color: var(--muted);
   }
 
+  /* ---- dopo il download -------------------------------------------------------------- */
+
+  .steps {
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    gap: 20px;
+    max-width: var(--measure);
+  }
+  .steps li {
+    counter-increment: step;
+    padding-left: 46px;
+    position: relative;
+    color: var(--muted);
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: .86rem;
+    color: var(--ground);
+    background: var(--yellow-wall);
+  }
+  .steps strong { color: var(--text); font-weight: 600; }
+
+  .req {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 18px;
+    margin: 4px 0 0;
+    font-size: .92rem;
+  }
+  .req dt { color: var(--faint); font-family: var(--mono); font-size: .8rem; }
+  .req dd { margin: 0; color: var(--muted); }
+
+  .hash {
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-left: 2px solid var(--line);
+    overflow-x: auto;
+  }
+  .hash code {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--muted);
+    white-space: pre;
+    word-break: break-all;
+  }
+
+  /* Il secondo punto di uscita. La pagina è alta cinquemila pixel: chi arriva in fondo
+     convinto non deve risalirla tutta per trovare il pulsante. */
+  .again {
+    margin-top: clamp(60px, 9vw, 104px);
+    padding: 34px 28px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+    text-align: center;
+  }
+  .again p { max-width: 44ch; color: var(--muted); }
+
   /* ---- the plan ---------------------------------------------------------------------- */
 
   .plan { border: 1px solid var(--line); background: #0a0906; padding: 14px; }
@@ -298,7 +395,7 @@
 
   <header class="hero">
     <p class="eyebrow">Horror cooperativo · Windows · v1.3.1</p>
-    <h1>The<br>Backrooms</h1>
+    <h1>The <br>Backrooms</h1>
     <p class="rule">Si esce insieme o non si esce.</p>
     <p class="lede">
       Tre livelli che non avete mai visto, perché vengono generati da capo a ogni partita.
@@ -307,7 +404,7 @@
   </header>
 
   <section aria-labelledby="scarica">
-    <h2 id="scarica" class="visually-hidden" hidden>Scarica</h2>
+    <h2 id="scarica" class="visually-hidden">Scarica</h2>
     <div class="download">
       <div>
         <ul class="specs">
@@ -317,16 +414,65 @@
           <li>2–10 giocatori</li>
         </ul>
         <p class="small muted">
-          Estrai la cartella e apri <code>GiocoEnrico.exe</code>. Non c'è niente da installare.
+          Versione 1.3.1 · <a href="https://github.com/XmarcoS10/the-backrooms-coop/releases/latest">cosa è cambiato</a>
         </p>
       </div>
       <a class="get" href="https://github.com/XmarcoS10/the-backrooms-coop/releases/latest/download/TheBackrooms-win64.zip">Scarica</a>
     </div>
-    <p class="warning">
-      Windows dirà che non riconosce l'applicazione: il gioco non ha una firma digitale, che
-      costa qualche centinaio di euro l'anno. Fate <strong>Altre informazioni → Esegui
-      comunque</strong>.
-    </p>
+  </section>
+
+  <section aria-labelledby="dopo">
+    <p class="eyebrow">Dopo il download</p>
+    <h2 id="dopo">Tre passaggi, poi ci siete</h2>
+    <ol class="steps">
+      <li>
+        <strong>Estraete lo zip.</strong> Tasto destro sul file → <em>Estrai tutto</em>. Serve
+        estrarlo davvero: se aprite la cartella compressa e lanciate il gioco da lì, Windows
+        gli nasconde metà dei file e non parte.
+      </li>
+      <li>
+        <strong>Aprite <code>GiocoEnrico.exe</code>.</strong> Non c'è niente da installare e
+        non tocca niente del vostro PC: è una cartella che potete cancellare quando volete.
+      </li>
+      <li>
+        <strong>Windows dirà che non riconosce l'applicazione.</strong> È normale e succede a
+        tutti: il gioco non ha una firma digitale, che costa qualche centinaio di euro l'anno.
+        Cliccate <em>Ulteriori informazioni</em> e poi <em>Esegui comunque</em>. Se non
+        compare <em>Ulteriori informazioni</em>, è perché la finestra è quella di SmartScreen
+        e il link è scritto piccolo sopra il pulsante.
+      </li>
+    </ol>
+
+    <div class="cols" style="margin-top: 36px;">
+      <div class="rule-block">
+        <span class="num">SERVE</span>
+        <h3>Requisiti minimi</h3>
+        <dl class="req">
+          <dt>Sistema</dt><dd>Windows 10 o 11, 64 bit</dd>
+          <dt>Processore</dt><dd>Qualunque x64 degli ultimi dieci anni</dd>
+          <dt>Memoria</dt><dd>4 GB di RAM</dd>
+          <dt>Scheda video</dt><dd>Compatibile DirectX 11 (feature level 11.0)</dd>
+          <dt>Spazio</dt><dd>200 MB</dd>
+          <dt>Rete</dt><dd>Connessione internet per giocare insieme</dd>
+        </dl>
+        <p class="small muted" style="margin-top: 12px;">
+          Su una macchina modesta mettete la qualità su <em>Bassa</em> nelle impostazioni:
+          spegne le ombre delle torce, che sono di gran lunga la cosa più costosa del gioco.
+        </p>
+      </div>
+      <div class="rule-block">
+        <span class="num">SE VOLETE CONTROLLARE</span>
+        <h3>Impronta del file</h3>
+        <p>
+          Se non vi fidate di un eseguibile scaricato da internet — e fate bene — potete
+          verificare che il file sia esattamente quello pubblicato. In PowerShell:
+        </p>
+        <pre class="hash"><code>Get-FileHash TheBackrooms-win64.zip</code></pre>
+        <p class="small muted">Deve venire, in SHA-256:</p>
+        <pre class="hash"><code>AC439170FBC05FEA910F972D343EF91A
+C48BA628F2397E89E31A72CB3FAE24B6</code></pre>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="pianta">
@@ -338,8 +484,8 @@
     </div>
     <p class="caption">
       51 × 51 celle · 4 m per cella · 204 m di lato · disegnata adesso da questa pagina, con lo
-      stesso algoritmo del gioco — <span style="color: var(--alarm)">■</span> generatori
-      · <span style="color: var(--exit)">■</span> uscita
+      stesso algoritmo del gioco — <span aria-hidden="true" style="color: var(--alarm)">■</span> generatori
+      · <span aria-hidden="true" style="color: var(--exit)">■</span> uscita
     </p>
   </section>
 
@@ -455,6 +601,12 @@
     </div>
     <p class="caption">Il controller è supportato. Tutti i tasti si cambiano in Impostazioni → Controlli.</p>
   </section>
+
+  <div class="again">
+    <p class="eyebrow" style="margin: 0;">Windows 64 bit · 64 MB · gratis</p>
+    <p>Si gioca in due o in dieci. Uno crea la partita, legge il codice agli altri, e si entra.</p>
+    <a class="get" href="https://github.com/XmarcoS10/the-backrooms-coop/releases/latest/download/TheBackrooms-win64.zip">Scarica il gioco</a>
+  </div>
 
   <footer>
     <p>

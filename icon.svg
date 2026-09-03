@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="The Backrooms">
+  <!-- Una porta illuminata in fondo a un corridoio buio. A 16 pixel, in una scheda del
+       browser, è l'unica cosa di questo gioco che resta leggibile: un rettangolo giallo
+       dentro un rettangolo nero. I colori sono quelli di LevelConfig, come nel resto del
+       sito — fondo #0d0c07, giallo parete #bda854. -->
+  <rect width="32" height="32" fill="#0d0c07"/>
+  <path d="M4 4 L28 4 L28 28 L4 28 Z" fill="none" stroke="#3a3420" stroke-width="1.5"/>
+  <rect x="12" y="10" width="8" height="16" fill="#bda854"/>
+  <rect x="12" y="10" width="8" height="3" fill="#fff6cf"/>
+</svg>
