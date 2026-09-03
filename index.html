@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Horror cooperativo per Windows: tre livelli generati a ogni partita, chat vocale di prossimita, si esce insieme o non si esce.">
+<meta property="og:title" content="The Backrooms Co-op">
+<meta property="og:description" content="Tre livelli generati a ogni partita. Qualcosa che vi cerca e vi sente. Si esce insieme o non si esce.">
+<meta property="og:type" content="website">
+<style>
+  html { color-scheme: dark; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>The Backrooms Co-op</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+</head>
+<body>
+<style>
+  /* Single theme, deliberately: the page is the inside of the building it is about, and a
+     light version of a windowless basement is not a design, it is a contradiction. Every
+     colour is painted explicitly so the page holds on either host ground. */
+  :root {
+    --ground: #0d0c07;
+    --surface: #16140c;
+    --surface-lift: #1e1b10;
+    --line: #33301f;
+
+    /* Straight out of LevelConfig.cs — the actual tints the game builds each level from. */
+    --yellow-wall: #bda854;
+    --yellow-floor: #6b5e30;
+    --warehouse: #575e54;
+    --tunnel: #424042;
+
+    --exit: #66ff80;
+    --alarm: #d9261f;
+
+    --text: #efe9d5;
+    --muted: #918963;
+    --faint: #6a6448;
+
+    --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+    --measure: 62ch;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  /* ---- the fluorescent fitting ------------------------------------------------------ */
+
+  .fitting {
+    position: relative;
+    height: 10px;
+    margin: 0 0 clamp(40px, 7vw, 76px);
+    background: linear-gradient(90deg,
+      transparent, var(--yellow-wall) 12%, #fff6cf 50%, var(--yellow-wall) 88%, transparent);
+    box-shadow: 0 0 60px 10px rgba(189, 168, 84, .28);
+    animation: buzz 9s steps(1, end) infinite;
+  }
+
+  /* The same stutter LightFlicker.cs does in the game: a short burst of blinks, then a long
+     quiet stretch. Irregular on purpose — a tidy pulse reads as decoration. */
+  @keyframes buzz {
+    0%, 71%   { opacity: 1; }
+    71.5%     { opacity: .12; }
+    72%       { opacity: 1; }
+    73.2%     { opacity: .18; }
+    73.6%     { opacity: 1; }
+    74.4%     { opacity: .1; }
+    74.9%     { opacity: 1; }
+    100%      { opacity: 1; }
+  }
+
+  /* ---- type -------------------------------------------------------------------------- */
+
+  h1, h2, h3 { font-family: var(--display); font-weight: 800; text-wrap: balance; margin: 0; }
+
+  h1 {
+    font-size: clamp(3.4rem, 11vw, 7.2rem);
+    line-height: .86;
+    letter-spacing: -.015em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    line-height: .95;
+    text-transform: uppercase;
+    letter-spacing: .005em;
+  }
+
+  h3 { font-size: 1.32rem; line-height: 1.1; text-transform: uppercase; letter-spacing: .01em; }
+
+  p { margin: 0; max-width: var(--measure); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .74rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 0 0 14px;
+  }
+
+  .lede { font-size: 1.2rem; color: #ded7bd; }
+  .muted { color: var(--muted); }
+  .small { font-size: .9rem; }
+
+  section { margin-top: clamp(60px, 9vw, 104px); }
+
+  /* ---- hero -------------------------------------------------------------------------- */
+
+  .hero { display: grid; gap: 26px; }
+
+  .rule {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3.4vw, 2.3rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--yellow-wall);
+    max-width: 22ch;
+  }
+
+  /* ---- download ---------------------------------------------------------------------- */
+
+  .download {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--yellow-wall);
+    padding: 26px 28px;
+  }
+
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-family: var(--mono);
+    font-size: .84rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .get {
+    display: inline-block;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    text-decoration: none;
+    color: #100e07;
+    background: var(--yellow-wall);
+    padding: 16px 34px;
+    border: 0;
+    white-space: nowrap;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .get:hover, .get:focus-visible { background: #e2cf72; transform: translateY(-1px); }
+
+  a { color: var(--yellow-wall); }
+  a:focus-visible, .get:focus-visible { outline: 2px solid var(--exit); outline-offset: 3px; }
+
+  .warning {
+    margin-top: 16px;
+    padding-left: 14px;
+    border-left: 2px solid var(--alarm);
+    font-size: .92rem;
+    color: var(--muted);
+  }
+
+  /* ---- the plan ---------------------------------------------------------------------- */
+
+  .plan { border: 1px solid var(--line); background: #0a0906; padding: 14px; }
+  .plan canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+
+  .caption {
+    font-family: var(--mono);
+    font-size: .8rem;
+    color: var(--faint);
+    margin-top: 12px;
+    max-width: none;
+  }
+
+  /* ---- rules and levels -------------------------------------------------------------- */
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+    gap: 30px;
+    margin-top: 32px;
+  }
+
+  .rule-block { display: grid; gap: 10px; align-content: start; }
+  .rule-block h3 { color: var(--text); }
+  .rule-block .num {
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .18em;
+    color: var(--yellow-wall);
+  }
+  .rule-block p { max-width: 40ch; color: var(--muted); }
+
+  .level {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 22px;
+    background: var(--surface);
+    border-top: 4px solid var(--swatch);
+  }
+  .level h3 { color: var(--swatch); }
+  .level p { color: var(--muted); max-width: 38ch; }
+  .level dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 14px;
+    margin: 6px 0 0;
+    font-family: var(--mono);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .level dt { color: var(--faint); }
+  .level dd { margin: 0; color: #ccc4a6; }
+
+  /* ---- controls ---------------------------------------------------------------------- */
+
+  .keys-scroll { overflow-x: auto; margin-top: 30px; }
+
+  table { border-collapse: collapse; width: 100%; min-width: 460px; }
+  th, td { text-align: left; padding: 11px 16px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: .74rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  td.key { font-family: var(--mono); color: var(--yellow-wall); white-space: nowrap; width: 1%; padding-right: 34px; }
+  td.what { color: #ded7bd; }
+  td.note { color: var(--muted); font-size: .9rem; font-style: italic; }
+
+  footer {
+    margin-top: clamp(60px, 9vw, 104px);
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+    color: var(--faint);
+    font-size: .88rem;
+    display: grid;
+    gap: 8px;
+  }
+  footer a { color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fitting { animation: none; }
+    .get { transition: none; }
+  }
+
+  @media (max-width: 640px) {
+    .download { grid-template-columns: 1fr; }
+    .get { text-align: center; }
+  }
+</style>
+
+<div class="fitting"></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Horror cooperativo · Windows · v1.0.0</p>
+    <h1>The<br>Backrooms</h1>
+    <p class="rule">Si esce insieme o non si esce.</p>
+    <p class="lede">
+      Tre livelli che non avete mai visto, perché vengono generati da capo a ogni partita.
+      Qualcosa che vi cerca e vi sente. E una torcia che si scarica.
+    </p>
+  </header>
+
+  <section aria-labelledby="scarica">
+    <h2 id="scarica" class="visually-hidden" hidden>Scarica</h2>
+    <div class="download">
+      <div>
+        <ul class="specs">
+          <li>TheBackrooms-win64.zip</li>
+          <li>63 MB</li>
+          <li>Windows 64 bit</li>
+          <li>2–10 giocatori</li>
+        </ul>
+        <p class="small muted">
+          Estrai la cartella e apri <code>GiocoEnrico.exe</code>. Non c'è niente da installare.
+        </p>
+      </div>
+      <a class="get" href="https://github.com/XmarcoS10/the-backrooms-coop/releases/latest/download/TheBackrooms-win64.zip">Scarica</a>
+    </div>
+    <p class="warning">
+      Windows dirà che non riconosce l'applicazione: il gioco non ha una firma digitale, che
+      costa qualche centinaio di euro l'anno. Fate <strong>Altre informazioni → Esegui
+      comunque</strong>.
+    </p>
+  </section>
+
+  <section aria-labelledby="pianta">
+    <p class="eyebrow">Pianta del livello 1</p>
+    <h2 id="pianta">Nessuno di voi conosce la strada</h2>
+    <div class="plan" style="margin-top: 26px;">
+      <canvas id="maze" width="612" height="306" role="img"
+              aria-label="Pianta generata di un livello: corridoi chiari su fondo scuro, con tre generatori segnati in rosso e l'uscita in verde."></canvas>
+    </div>
+    <p class="caption">
+      51 × 51 celle · 4 m per cella · 204 m di lato · disegnata adesso da questa pagina, con lo
+      stesso algoritmo del gioco — <span style="color: var(--alarm)">■</span> generatori
+      · <span style="color: var(--exit)">■</span> uscita
+    </p>
+  </section>
+
+  <section aria-labelledby="regole">
+    <p class="eyebrow">Come funziona</p>
+    <h2 id="regole">Tre cose da sapere</h2>
+    <div class="cols">
+      <div class="rule-block">
+        <span class="num">01 · L'OBIETTIVO</span>
+        <h3>Tre generatori</h3>
+        <p>
+          Vanno avviati tenendo premuto per otto secondi. In quegli otto secondi non potete
+          muovervi e fate rumore come se steste correndo. È il momento in cui serve qualcuno
+          che guardi il corridoio.
+        </p>
+      </div>
+      <div class="rule-block">
+        <span class="num">02 · QUANDO VI PRENDE</span>
+        <h3>Quarantacinque secondi</h3>
+        <p>
+          Chi viene preso cade a terra e resta cosciente. Un compagno può rimetterlo in piedi
+          tenendo premuto E per cinque secondi. Se non arriva nessuno, è finita per lui; se non
+          resta nessuno in piedi, è finita per tutti.
+        </p>
+      </div>
+      <div class="rule-block">
+        <span class="num">03 · LA VOCE</span>
+        <h3>Solo chi è vicino</h3>
+        <p>
+          La chat vocale è di prossimità: sentite chi vi sta accanto, dalla direzione in cui si
+          trova, e la voce sfuma nel nulla oltre i trenta metri. Separarsi vi lascia soli
+          davvero.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="livelli">
+    <p class="eyebrow">La campagna</p>
+    <h2 id="livelli">Tre livelli, in fila</h2>
+    <div class="cols">
+      <article class="level" style="--swatch: #bda854;">
+        <h3>1 · Le stanze gialle</h3>
+        <p>Moquette umida, carta da parati, e il ronzio dei neon. Vi sente, non vi vede.</p>
+        <dl>
+          <dt>Lato</dt><dd>204 m</dd>
+          <dt>Luci</dt><dd>ogni 20 m</dd>
+          <dt>Insegue</dt><dd>1 · sente</dd>
+        </dl>
+      </article>
+      <article class="level" style="--swatch: #7d8a78;">
+        <h3>2 · Il magazzino</h3>
+        <p>Più grande, più buio, più veloce di voi. E ci sono meno batterie in giro.</p>
+        <dl>
+          <dt>Lato</dt><dd>236 m</dd>
+          <dt>Luci</dt><dd>ogni 28 m</dd>
+          <dt>Insegue</dt><dd>1 · sente</dd>
+        </dl>
+      </article>
+      <article class="level" style="--swatch: #8a8790;">
+        <h3>3 · I tunnel</h3>
+        <p>
+          Nessuna luce fissa: si vede soltanto con quello che portate voi. E laggiù ce ne sono
+          due — una delle quali ha gli occhi, e una torcia accesa si vede da lontano.
+        </p>
+        <dl>
+          <dt>Lato</dt><dd>220 m</dd>
+          <dt>Luci</dt><dd>nessuna</dd>
+          <dt>Insegue</dt><dd>2 · sente + vede</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="insieme">
+    <p class="eyebrow">Per giocare in più di uno</p>
+    <h2 id="insieme">Un codice, e basta</h2>
+    <p class="lede" style="margin-top: 20px;">
+      Uno di voi fa <strong>Crea partita</strong> e legge ad alta voce il codice che compare.
+      Gli altri lo scrivono in <strong>Entra in partita</strong>. Quando siete tutti pronti,
+      chi ospita avvia. Niente account, niente server da configurare.
+    </p>
+  </section>
+
+  <section aria-labelledby="comandi">
+    <p class="eyebrow">Comandi</p>
+    <h2 id="comandi">Tutto riassegnabile</h2>
+    <div class="keys-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Tasto</th><th scope="col">Azione</th><th scope="col">Nota</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="key">WASD · Mouse</td><td class="what">Muoversi e guardare</td><td class="note"></td></tr>
+          <tr><td class="key">Shift</td><td class="what">Correre</td><td class="note">vi sente da molto più lontano</td></tr>
+          <tr><td class="key">E</td><td class="what">Interagire, raccogliere, rianimare</td><td class="note">tenere premuto per i generatori</td></tr>
+          <tr><td class="key">F</td><td class="what">Torcia</td><td class="note">consuma batteria</td></tr>
+          <tr><td class="key">Q</td><td class="what">Usare l'oggetto in mano</td><td class="note"></td></tr>
+          <tr><td class="key">1 2 3 · rotellina</td><td class="what">Cambiare oggetto</td><td class="note">senza fermarsi</td></tr>
+          <tr><td class="key">I</td><td class="what">Zaino</td><td class="note">per riordinare gli slot</td></tr>
+          <tr><td class="key">M</td><td class="what">Mappa</td><td class="note">solo dove siete già passati</td></tr>
+          <tr><td class="key">Esc</td><td class="what">Pausa</td><td class="note">non ferma il mostro</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Il controller è supportato. Tutti i tasti si cambiano in Impostazioni → Controlli.</p>
+  </section>
+
+  <footer>
+    <p>
+      <a href="https://github.com/XmarcoS10/the-backrooms-coop">Repository e versioni</a> ·
+      problemi e segnalazioni nelle Issues.
+    </p>
+    <p>
+      Personaggi dal pacchetto CC0 di <a href="https://quaternius.com">Quaternius</a>. Texture,
+      suoni e livelli sono generati dal gioco stesso: nel progetto non c'è nessuna immagine di
+      un muro, solo il codice che la disegna.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // The same maze the game builds: a depth-first backtracker on odd cells, then a braiding
+  // pass that reopens dead ends. Drawn rather than screenshotted, because a screenshot of a
+  // procedural game shows one level and this shows what the generator does.
+  (function () {
+    var canvas = document.getElementById("maze");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+
+    var SIZE = 51;                      // 25 rooms * 2 + 1, as in BackroomsGenerator
+    var grid = new Uint8Array(SIZE * SIZE);
+    var at = function (x, z) { return z * SIZE + x; };
+
+    // Carve.
+    var stack = [[1, 1]];
+    grid[at(1, 1)] = 1;
+    var steps = [[0, 2], [0, -2], [2, 0], [-2, 0]];
+
+    while (stack.length) {
+      var cur = stack[stack.length - 1];
+      var open = [];
+      for (var i = 0; i < 4; i++) {
+        var nx = cur[0] + steps[i][0], nz = cur[1] + steps[i][1];
+        if (nx > 0 && nz > 0 && nx < SIZE - 1 && nz < SIZE - 1 && !grid[at(nx, nz)]) open.push([nx, nz]);
+      }
+      if (!open.length) { stack.pop(); continue; }
+      var next = open[(Math.random() * open.length) | 0];
+      grid[at((cur[0] + next[0]) / 2, (cur[1] + next[1]) / 2)] = 1;
+      grid[at(next[0], next[1])] = 1;
+      stack.push(next);
+    }
+
+    // Braid: reopen dead ends, so the level has loops instead of one route with wrong turns.
+    for (var z = 1; z < SIZE - 1; z += 2) {
+      for (var x = 1; x < SIZE - 1; x += 2) {
+        var sides = [[0, 1], [0, -1], [1, 0], [-1, 0]], openCount = 0, closed = [];
+        for (var s = 0; s < 4; s++) {
+          var wx = x + sides[s][0], wz = z + sides[s][1];
+          if (grid[at(wx, wz)]) openCount++;
+          else if (wx > 0 && wz > 0 && wx < SIZE - 1 && wz < SIZE - 1) closed.push([wx, wz]);
+        }
+        if (openCount === 1 && closed.length && Math.random() < 0.62) {
+          var pick = closed[(Math.random() * closed.length) | 0];
+          grid[at(pick[0], pick[1])] = 1;
+        }
+      }
+    }
+    for (var i2 = 0; i2 < 9; i2++) grid[at(i2 % 3, (i2 / 3) | 0)] = 1;   // spawn antechamber
+
+    // Draw. The canvas is wider than the maze is square, so the plan is centred in it.
+    var cell = Math.floor(canvas.height / SIZE);
+    var span = cell * SIZE;
+    var ox = Math.floor((canvas.width - span) / 2);
+    var oy = Math.floor((canvas.height - span) / 2);
+
+    ctx.fillStyle = "#0a0906";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#6b5e30";
+    for (var z2 = 0; z2 < SIZE; z2++)
+      for (var x2 = 0; x2 < SIZE; x2++)
+        if (grid[at(x2, z2)]) ctx.fillRect(ox + x2 * cell, oy + (SIZE - 1 - z2) * cell, cell, cell);
+
+    // Three generators and an exit, marked the way the map in game marks them.
+    var spots = [];
+    while (spots.length < 4) {
+      var rx = 1 + ((Math.random() * (SIZE - 2)) | 0), rz = 1 + ((Math.random() * (SIZE - 2)) | 0);
+      if (!grid[at(rx, rz)]) continue;
+      if (rx + rz < 24) continue;                      // away from where the players come in
+      spots.push([rx, rz]);
+    }
+    for (var m = 0; m < spots.length; m++) {
+      ctx.fillStyle = m === 3 ? "#66ff80" : "#d9261f";
+      ctx.fillRect(ox + spots[m][0] * cell - 2, oy + (SIZE - 1 - spots[m][1]) * cell - 2, cell + 4, cell + 4);
+    }
+  })();
+</script>
+
+</body>
+</html>
